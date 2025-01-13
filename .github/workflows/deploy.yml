@@ -15,7 +15,18 @@ jobs:
     steps:
     - name: Checkout main
       uses: actions/checkout@v4
-    - name: Build and deploy
-      uses: shalzz/zola-deploy-action@v0.19.2
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Install Zola
+      run: |
+        # Download the Zola binary
+        curl -sL https://github.com/getzola/zola/releases/download/v0.19.2/zola-v0.19.2-x86_64-unknown-linux-gnu.tar.gz | tar xz
+        # Move the binary to a directory in PATH
+        sudo mv zola /usr/local/bin/
+        # Verify installation
+        zola --version
+    - name: Build site
+      run: zola build
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./public
